@@ -1,7 +1,10 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -22,6 +25,10 @@ import java.util.UUID;
 public class CrimeFragment extends Fragment {
 
     private static final String ARG_CRIME_ID = "crime_id";
+    private static final String DIALOG_DATE = "DialogeDate";
+
+    private static final int REQUEST_DATE = 0;
+
     private Crime mCrime;
     private EditText mTitleField;
     private Button mDateButton;
@@ -69,13 +76,17 @@ public class CrimeFragment extends Fragment {
             }
         });
 
-        mRawDate = mCrime.getDate();
-        mDateFormat = new DateFormat();
-        mDateFormat.getDateFormat(getActivity());
-
         mDateButton = (Button) v.findViewById(R.id.crime_date);
-        mDateButton.setText(mDateFormat.format("EEEE, LLLL d, yyyy", mRawDate));
-        mDateButton.setEnabled(false);
+        updateDate();
+        mDateButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                FragmentManager manager = getFragmentManager();
+                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+                dialog.setTargetFragment(CrimeFragment.this,REQUEST_DATE);
+                dialog.show(manager, DIALOG_DATE);
+            }
+        });
 
         mSolvedCheckbox = (CheckBox)v.findViewById(R.id.crime_solved);
         mSolvedCheckbox.setChecked(mCrime.isSolved());
@@ -88,6 +99,28 @@ public class CrimeFragment extends Fragment {
         });
 
         return v;
+    }
+
+    //retrieving date extra from DatePickerFragment, setting the date on Crime, and refreshing the text on the date button
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (resultCode != Activity.RESULT_OK){
+            return;
+        }
+
+        if (requestCode == REQUEST_DATE){
+            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            mCrime.setDate(date);
+            updateDate();
+        }
+    }
+
+    private void updateDate() {
+        mRawDate = mCrime.getDate();
+        mDateFormat = new DateFormat();
+        mDateFormat.getDateFormat(getActivity());
+        mDateButton.setText(mCrime.getDate().toString());
+        mDateButton.setText(mDateFormat.format("EEEE, LLLL d, yyyy", mRawDate));
     }
 
 }
