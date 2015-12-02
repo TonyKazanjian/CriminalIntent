@@ -19,6 +19,8 @@ import java.util.GregorianCalendar;
  */
 public class DatePickerFragment extends DialogFragment {
 
+    public static final String EXTRA_DATE = "com.bignerdranch.android.criminalintent.date";
+
     private static final String ARG_DATE = "date";
 
     private DatePicker mDatePicker;
@@ -85,7 +87,7 @@ public class DatePickerFragment extends DialogFragment {
     //calling back to the target fragment
     private void sendResult(int resultCode, Date date){
         Intent intent = new Intent();
-        intent.putExtra(DatePickerActivity.EXTRA_DATE, date);
+        intent.putExtra(EXTRA_DATE, date);
 
         //calls CrimeFragment.onActivityResult...
         getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
