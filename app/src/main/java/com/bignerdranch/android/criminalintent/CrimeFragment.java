@@ -116,10 +116,8 @@ public class CrimeFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem menuItem){
         switch(menuItem.getItemId()){
             case R.id.menu_item_delete_crime:
-                mCrime = CrimeLab.get(getActivity()).getCrime(mCrime.getId());
-                CrimeLab.get(getActivity()).removeCrime(mCrime);
-                Intent intent = CrimeListActivity.newIntent(getActivity(),mCrime.getId());
-                startActivity(intent);
+                CrimeLab.get(null).removeCrime(mCrime); //you don't need to send an intent back to the CrimeListActivity because the CrimeFragment is doing the removal and referencing the finish.
+                //also, CrimeListActivity references CrimeLab directly.
                 getActivity().finish();
                 return true;
             default:
