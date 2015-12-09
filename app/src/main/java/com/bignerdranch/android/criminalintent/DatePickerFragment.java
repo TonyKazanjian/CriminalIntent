@@ -39,6 +39,7 @@ public class DatePickerFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 
+
         //extracting the date and initializing DatePicker
         Date date = (Date) getArguments().getSerializable(ARG_DATE);
 
@@ -90,9 +91,9 @@ public class DatePickerFragment extends DialogFragment {
         intent.putExtra(EXTRA_DATE, date);
 
         //calls CrimeFragment.onActivityResult...
-        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
+        this.getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
 
-        if (getTargetFragment() == null){
+        if (this.getTargetFragment() == null){
             this.getActivity().setResult(resultCode, intent);
         }
     }

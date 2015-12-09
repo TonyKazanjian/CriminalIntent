@@ -84,12 +84,12 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onClick(View v){
 //               FragmentManager manager = getFragmentManager();
-                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
-                dialog.setTargetFragment(CrimeFragment.this,REQUEST_DATE);
+//                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+                setTargetFragment(CrimeFragment.this,REQUEST_DATE);
 //                dialog.show(manager, DIALOG_DATE);
-                Intent i = DatePickerActivity.newIntent(getActivity(),mCrime.getDate());
-                i.putExtra(DatePickerFragment.EXTRA_DATE,mCrime.getDate());
-                dialog.startActivityForResult(i,REQUEST_DATE);
+                Intent i = new Intent(getActivity(), DatePickerActivity.class);
+                i.putExtra(DatePickerFragment.EXTRA_DATE, mCrime.getDate());
+                getActivity().startActivityForResult(i, REQUEST_DATE);
             }
         });
 
