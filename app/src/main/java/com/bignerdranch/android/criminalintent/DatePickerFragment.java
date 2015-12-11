@@ -91,10 +91,10 @@ public class DatePickerFragment extends DialogFragment {
         intent.putExtra(EXTRA_DATE, date);
 
         //calls CrimeFragment.onActivityResult...
-        this.getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
+        onActivityResult(CrimeFragment.REQUEST_DATE, resultCode, intent);
 
         if (this.getTargetFragment() == null){
-            this.getActivity().setResult(resultCode, intent);
+            getActivity().setResult(resultCode, intent);
         }
     }
 }
