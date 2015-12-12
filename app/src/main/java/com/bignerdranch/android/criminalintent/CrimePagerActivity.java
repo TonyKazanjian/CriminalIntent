@@ -1,5 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +46,7 @@ public class CrimePagerActivity extends FragmentActivity {
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager) {
             @Override
             public Fragment getItem(int position) {
-                Crime crime  = mCrimes.get(position);
+                Crime crime = mCrimes.get(position);
                 return CrimeFragment.newInstance(crime.getId());
             }
 
@@ -59,6 +61,19 @@ public class CrimePagerActivity extends FragmentActivity {
                 mViewPager.setCurrentItem(i);
                 break;
             }
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+
+        if (resultCode != Activity.RESULT_OK){
+            return;
+        }
+
+        if (requestCode == CrimeFragment.REQUEST_DATE){
+            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+
+
         }
     }
 }

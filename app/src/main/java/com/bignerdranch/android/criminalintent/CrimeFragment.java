@@ -83,11 +83,6 @@ public class CrimeFragment extends Fragment {
         mDateButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-//               FragmentManager manager = getFragmentManager();
-//                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
-//                DatePickerFragment datePickerFragment = new DatePickerFragment();
-//                datePickerFragment.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
-//                dialog.show(manager, DIALOG_DATE);
                 Intent i = new Intent(getActivity(), DatePickerActivity.class);
                 i.putExtra(DatePickerFragment.EXTRA_DATE, mCrime.getDate());
                 getActivity().startActivityForResult(i, REQUEST_DATE);
@@ -131,7 +126,6 @@ public class CrimeFragment extends Fragment {
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
 
-
             updateDate();
         }
 
@@ -148,6 +142,13 @@ public class CrimeFragment extends Fragment {
         mDateFormat.getDateFormat(getActivity());
         mDateButton.setText(mCrime.getDate().toString());
         mDateButton.setText(mDateFormat.format("EEEE, LLLL d, yyyy", mRawDate));
+    }
+
+    public void passDate(Date date){
+        if (mCrime != null){
+            mCrime.setDate(date);
+            updateDate();
+        }
     }
 
 //    private void updateTime() {

@@ -1,9 +1,8 @@
 package com.bignerdranch.android.criminalintent;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,9 @@ import java.util.GregorianCalendar;
 /**
  * Created by tonyk_000 on 11/28/2015.
  */
-public class DatePickerFragment extends DialogFragment {
+public class DatePickerFragment extends Fragment {
+
+    private DatePickerFragmentListener mDatePickerFragmentListener;
 
     public static final String EXTRA_DATE = "com.bignerdranch.android.criminalintent.date";
 
@@ -34,6 +35,19 @@ public class DatePickerFragment extends DialogFragment {
         DatePickerFragment fragment = new DatePickerFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+
+        try {
+            mDatePickerFragmentListener = (DatePickerFragmentListener) activity;
+            //casting is checking to see if the DatePickerFragmentListener is implemented by the context
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement DatePickerFragmentListener");
+        }
     }
 
     @Override
@@ -61,40 +75,28 @@ public class DatePickerFragment extends DialogFragment {
                 int month = mDatePicker.getMonth();
                 int day = mDatePicker.getDayOfMonth();
                 Date date = new GregorianCalendar(year, month, day).getTime();
-                sendResult(Activity.RESULT_OK, date);
+                mDatePickerFragmentListener.onOkayButtonClicked(date);
             }
         });
 
         return v;
 
-
-//        return new AlertDialog.Builder(getActivity())
-//                .setView(v)
-//                .setTitle(R.string.date_picker_title)
-//                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        //retrieving date from DatePicker and sending to to CrimeFragment
-//                        int year = mDatePicker.getYear();
-//                        int month = mDatePicker.getMonth();
-//                        int day = mDatePicker.getDayOfMonth();
-//                        Date date = new GregorianCalendar(year, month, day).getTime();
-//                        sendResult(Activity.RESULT_OK, date);
-//                    }
-//                })
-//                .create();
     }
 
     //calling back to the target fragment
-    private void sendResult(int resultCode, Date date){
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_DATE, date);
+//    private void sendResult(int resultCode, Date date){
+//        Intent intent = new Intent();
+//        intent.putExtra(EXTRA_DATE, date);
+//
+//        //calls CrimeFragment.onActivityResult...
+//        onActivityResult(CrimeFragment.REQUEST_DATE, resultCode, intent);
+//
+//        if (this.getTargetFragment() == null){
+//            getActivity().setResult(resultCode, intent);
+//        }
+//    }
 
-        //calls CrimeFragment.onActivityResult...
-        onActivityResult(CrimeFragment.REQUEST_DATE, resultCode, intent);
-
-        if (this.getTargetFragment() == null){
-            getActivity().setResult(resultCode, intent);
-        }
+    public interface DatePickerFragmentListener{
+        void onOkayButtonClicked(Date date);
     }
 }
