@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import java.util.Date;
@@ -23,6 +24,8 @@ public class CrimePagerActivity extends FragmentActivity {
 
     private ViewPager mViewPager;
     private List<Crime> mCrimes;
+
+    private FragmentStatePagerAdapter fragmentStatePagerAdapter;
 
     public static Intent newIntent(Context packageContext, UUID crimeId){
         Intent intent = new Intent(packageContext, CrimePagerActivity.class);
@@ -43,9 +46,9 @@ public class CrimePagerActivity extends FragmentActivity {
         mCrimes = CrimeLab.get(this).getCrimes();
         FragmentManager fragmentManager = getSupportFragmentManager();
         //setting adapter to be an unnamed instance of FragmentStatePagerAdapter -- remember, this manages the conversation with ViewPager
-        mViewPager.setAdapter(new FragmentStatePagerAdapter(fragmentManager) {
+        fragmentStatePagerAdapter = new FragmentStatePagerAdapter(fragmentManager) {
             @Override
-            public Fragment getItem(int position) {
+            public CrimeFragment getItem(int position) {
                 Crime crime = mCrimes.get(position);
                 return CrimeFragment.newInstance(crime.getId());
             }
@@ -54,7 +57,9 @@ public class CrimePagerActivity extends FragmentActivity {
             public int getCount() {
                 return mCrimes.size();
             }
-        });
+        };
+
+        mViewPager.setAdapter(fragmentStatePagerAdapter);
 
         for (int i = 0; i < mCrimes.size(); i++){
             if (mCrimes.get(i).getId().equals(crimeId)){
@@ -66,12 +71,16 @@ public class CrimePagerActivity extends FragmentActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){
 
+        Fragment crimeFragment = fragmentStatePagerAdapter.getItem(mViewPager.getCurrentItem());
+        //a CrimeFragment is being returned here, though I can only declare it an instance of Fragment, not CrimeFragment
+
         if (resultCode != Activity.RESULT_OK){
             return;
         }
 
         if (requestCode == CrimeFragment.REQUEST_DATE){
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            crimeFragment.passDate(date); //can't use this method, though it is being called on a CrimeFragment
 
 
         }
