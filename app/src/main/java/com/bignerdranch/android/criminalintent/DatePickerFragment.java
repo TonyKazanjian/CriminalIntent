@@ -22,7 +22,7 @@ public class DatePickerFragment extends Fragment {
 
     public static final String EXTRA_DATE = "com.bignerdranch.android.criminalintent.date";
 
-    private static final String ARG_DATE = "date";
+    public static final String ARG_DATE = "date";
 
     private DatePicker mDatePicker;
     private Button mOKbutton;
@@ -52,7 +52,6 @@ public class DatePickerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-
 
         //extracting the date and initializing DatePicker
         Date date = (Date) getArguments().getSerializable(ARG_DATE);

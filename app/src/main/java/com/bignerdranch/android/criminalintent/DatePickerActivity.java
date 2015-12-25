@@ -2,6 +2,7 @@ package com.bignerdranch.android.criminalintent;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import java.util.Date;
@@ -11,7 +12,14 @@ import java.util.Date;
  */
 public class DatePickerActivity extends SingleFragmentActivity implements DatePickerFragment.DatePickerFragmentListener{
 
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
 
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container,createFragment())
+                .commit();
+    }
     @Override
     protected Fragment createFragment() {
         return new DatePickerFragment().newInstance(new Date());
@@ -21,7 +29,7 @@ public class DatePickerActivity extends SingleFragmentActivity implements DatePi
     public void onOkayButtonClicked(Date date) {
 
         Intent intent = new Intent();
-        intent.putExtra(DatePickerFragment.EXTRA_DATE,date);
+        intent.putExtra(DatePickerFragment.EXTRA_DATE, date);
 
         setResult(Activity.RESULT_OK, intent);
         finish();

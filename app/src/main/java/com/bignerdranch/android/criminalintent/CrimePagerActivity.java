@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import java.util.Date;
@@ -71,8 +69,7 @@ public class CrimePagerActivity extends FragmentActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data){
 
-        Fragment crimeFragment = fragmentStatePagerAdapter.getItem(mViewPager.getCurrentItem());
-        //a CrimeFragment is being returned here, though I can only declare it an instance of Fragment, not CrimeFragment
+        CrimeFragment crimeFragment = (CrimeFragment)fragmentStatePagerAdapter.getItem(mViewPager.getCurrentItem());
 
         if (resultCode != Activity.RESULT_OK){
             return;
@@ -80,8 +77,8 @@ public class CrimePagerActivity extends FragmentActivity {
 
         if (requestCode == CrimeFragment.REQUEST_DATE){
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-            crimeFragment.passDate(date); //can't use this method, though it is being called on a CrimeFragment
-
+            crimeFragment.passDate(date);
+            crimeFragment.updateDate();
 
         }
     }
