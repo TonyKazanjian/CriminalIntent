@@ -78,8 +78,7 @@ public class CrimePagerActivity extends FragmentActivity {
         if (requestCode == CrimeFragment.REQUEST_DATE){
             Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             crimeFragment.passDate(date);
-            crimeFragment.updateDate();
-
+//            crimeFragment.updateDate();
         }
     }
 }

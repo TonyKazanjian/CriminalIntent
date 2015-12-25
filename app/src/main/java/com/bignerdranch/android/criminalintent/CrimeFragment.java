@@ -79,7 +79,7 @@ public class CrimeFragment extends Fragment {
         });
 
         mDateButton = (Button) v.findViewById(R.id.crime_date);
-//        updateDate();
+        updateDate();
         mDateButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -137,16 +137,18 @@ public class CrimeFragment extends Fragment {
     }
 
     public void updateDate() {
-        Date date = (Date)getActivity().getIntent().getSerializableExtra(DatePickerFragment.EXTRA_DATE);
-//        mDateFormat = new DateFormat();
-//        mDateFormat.getDateFormat(getActivity());
-        mDateButton.setText(date.toString());
-//        mDateButton.setText(mDateFormat.format("EEEE, LLLL d, yyyy", mRawDate));
+        //IS THIS WHERE THE PROBLEM IS?
+        mRawDate = mCrime.getDate();
+        mDateFormat = new DateFormat();
+        mDateFormat.getDateFormat(getActivity());
+        mDateButton.setText(mRawDate.toString());
+        mDateButton.setText(mDateFormat.format("EEEE, LLLL d, yyyy", mRawDate));
     }
 
     public void passDate(Date date){
         if (mCrime != null){
             mCrime.setDate(date);
+            updateDate();
         }
     }
 
