@@ -62,7 +62,7 @@ public class CrimeListFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        mEmptyView = (TextView) view.findViewById(R.id.empty_view);
+//        mEmptyView = (TextView) view.findViewById(R.id.empty_view);
 
         if (savedInstanceState != null){
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
