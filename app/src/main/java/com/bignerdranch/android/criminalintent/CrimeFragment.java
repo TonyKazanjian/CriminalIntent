@@ -45,6 +45,7 @@ public class CrimeFragment extends Fragment {
     private Date mRawDate;
 
     private Button mReportButton;
+    private Button mCallButton;
 
     public static CrimeFragment newInstance(UUID crimeId){
         Bundle args = new Bundle();
@@ -139,11 +140,37 @@ public class CrimeFragment extends Fragment {
 //                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
 //                i = Intent.createChooser(i, getString(R.string.send_report));
 //                startActivity(i);
-                Intent i = ShareCompat.IntentBuilder.from(getActivity()).setType("text/plain").getIntent()
-                        .putExtra(Intent.EXTRA_TEXT,getCrimeReport())
-                        .putExtra(Intent.EXTRA_SUBJECT,getString(R.string.crime_report_subject));
-                i.createChooser(i,getString(R.string.send_report));
-                startActivity(i);
+                ShareCompat.IntentBuilder.from(getActivity()).setType("text/plain")
+                        .setText(getCrimeReport())
+                        .setSubject(getString(R.string.crime_report_subject))
+                        .setChooserTitle(getString(R.string.send_report))
+                        .startChooser();
+            }
+        });
+
+        mCallButton = (Button)v.findViewById(R.id.call_suspect);
+        mCallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Uri contentUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+                String selectClause = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?";
+
+                String [] fields = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+                String [] selectParams = {Long.toString(mCrime.getContactId())};
+                //or string array for Phone.NUMBER
+                Cursor c = getActivity().getContentResolver().query(contentUri,fields,selectClause,selectParams,null);
+                if (c != null && c.getCount()>0){
+                    try {
+                        c.moveToFirst();
+                        String number = c.getString(0);
+                        Uri phoneNumber = Uri.parse("tel:" + number);
+                        Intent i = new Intent(Intent.ACTION_DIAL, phoneNumber);
+                        startActivity(i);
+                    }
+                    finally {
+                        c.close();
+                    }
+                }
             }
         });
 
@@ -170,7 +197,7 @@ public class CrimeFragment extends Fragment {
             Uri contactUri = data.getData();
             // Specify which fields you want your query to return values for
             String[] queryFields = new String[]{
-                    ContactsContract.Contacts.DISPLAY_NAME
+                    ContactsContract.Contacts.DISPLAY_NAME,ContactsContract.Contacts._ID
             };
             // Perform your query - the contactUri is like a "where" clause here
             Cursor c = getActivity().getContentResolver().query(contactUri, queryFields,
@@ -185,7 +212,10 @@ public class CrimeFragment extends Fragment {
                 // Pull out hte irst column of hte first row of data - that is your suspect's name
                 c.moveToFirst();
                 String suspect = c.getString(0);
+                long contactId = c.getLong(1);
+
                 mCrime.setSuspect(suspect);
+                mCrime.setContactId(contactId);
                 mSuspectButton.setText(suspect);
             } finally {
                 c.close();

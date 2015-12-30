@@ -14,6 +14,8 @@ public class Crime {
     private Date mDate;
     private boolean mSolved;
     private String mSuspect;
+    //adding field for contactId
+    private long mContactId;
 
     //for chapter 8 challenge
     private DateFormat mDateFormat;
@@ -60,6 +62,14 @@ public class Crime {
 
     public void setSuspect(String suspect) {
         mSuspect = suspect;
+    }
+
+    public long getContactId() {
+        return mContactId;
+    }
+
+    public void setContactId(long contactId) {
+        mContactId = contactId;
     }
 
     public Crime() {

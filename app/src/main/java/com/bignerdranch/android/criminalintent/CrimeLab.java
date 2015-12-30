@@ -20,7 +20,7 @@ public class CrimeLab {
     private static CrimeLab sCrimeLab;
 
     private Context mContext;
-    private SQLiteDatabase mDatabase;
+    private static SQLiteDatabase mDatabase;
 
     public static CrimeLab get(Context context){
         if (sCrimeLab == null){
@@ -84,6 +84,8 @@ public class CrimeLab {
         mDatabase.update(CrimeTable.NAME, values,
                 CrimeTable.Cols.UUID + " = ?",
                 new String[] {uuidString});
+        //string array specifies values for the "where" clause,
+        //which specifies which rows get updated - in this case, the UUID row.
     }
 
     private static ContentValues getContentValues(Crime crime){
@@ -93,12 +95,13 @@ public class CrimeLab {
         values.put(CrimeTable.Cols.DATE, crime.getDate().getTime());
         values.put(CrimeTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
         values.put(CrimeTable.Cols.SUSPECT, crime.getSuspect());
+        values.put(CrimeTable.Cols.CONTACT_ID, Long.toString(crime.getContactId()));
 
         return values;
     }
 
     //for reading SQLite data
-    private CrimeCursorWrapper queryCrimes(String whereClause, String[] whereArgs){ // wrapping the cursor we get from the query into a CrimeCursorWrapper
+    public static CrimeCursorWrapper queryCrimes(String whereClause, String[] whereArgs){ // wrapping the cursor we get from the query into a CrimeCursorWrapper
         Cursor cursor = mDatabase.query(
                 CrimeTable.NAME,
                 null, //Columns = null selects all columns
