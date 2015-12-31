@@ -62,6 +62,10 @@ public class Crime {
         mSuspect = suspect;
     }
 
+    public String getPhotoFilename(){
+        return "IMG_" + getId().toString() + ".jpg";
+    }
+
     public Crime() {
         //need to return a crime with an appropriate UUID for the database
         this(UUID.randomUUID());
