@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -17,6 +18,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -56,6 +58,8 @@ public class CrimeFragment extends Fragment {
     private Button mReportButton;
 
     private File mPhotoFile;
+
+    private Point mPhotoSize;
 
     public static CrimeFragment newInstance(UUID crimeId){
         Bundle args = new Bundle();
@@ -186,7 +190,7 @@ public class CrimeFragment extends Fragment {
         mPhotoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPhotoFile != null && mPhotoFile.exists()){
+                if (mPhotoFile != null && mPhotoFile.exists()) {
                     PictureDialogFragment pictureDialogFragment = PictureDialogFragment.newInstance(mPhotoFile);
                     FragmentManager manager = getFragmentManager();
                     pictureDialogFragment.show(manager, DIALOG_DATE);
@@ -233,6 +237,16 @@ public class CrimeFragment extends Fragment {
                 c.close();
             }
         } else if (requestCode == REQUEST_PHOTO){
+
+            // Having the onGlobalLayoutListener fire an event when a layout pass happens
+            ViewTreeObserver observer = mPhotoView.getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mPhotoSize = new Point();
+                    mPhotoSize.set(mPhotoView.getWidth(), mPhotoView.getHeight());
+                }
+            });
             updatePhotoView();
         }
     }
@@ -273,7 +287,7 @@ public class CrimeFragment extends Fragment {
         if(mPhotoFile == null || !mPhotoFile.exists()){
             mPhotoView.setImageDrawable(null);
         } else {
-            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(),getActivity());
+            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
             mPhotoView.setImageBitmap(bitmap);
         }
     }
