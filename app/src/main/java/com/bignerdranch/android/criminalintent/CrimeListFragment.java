@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,13 +31,15 @@ public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
     private boolean mSubtitleVisible;
-    private Callbacks mCallbacks;
+    private CrimeListListener mCrimeListListener;
+
 
     /**
      * Required interface for hosting activitie
      */
-    public interface Callbacks{
+    public interface CrimeListListener {
         void onCrimeSelected(Crime crime);
+        void onSolvedCheck(boolean isSolved, Crime crime);
     }
 
     private Button mAddNewButton;
@@ -48,7 +51,7 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
-        mCallbacks = (Callbacks) activity;
+        mCrimeListListener = (CrimeListListener) activity;
     }
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -59,7 +62,7 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onDetach(){
         super.onDetach();
-        mCallbacks = null;
+        mCrimeListListener = null;
     }
 
     @Override
@@ -77,8 +80,8 @@ public class CrimeListFragment extends Fragment {
             public void onClick(View v) {
                 Crime crime = new Crime();
                 CrimeLab.get(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity.newIntent(getActivity(),crime.getId()); //starts instance of CrimePagerActivity to edit the new crime
-                startActivity(intent);
+                updateUI(); // must update because on tablets, the list remains visible when you add a new crime
+                mCrimeListListener.onCrimeSelected(crime);
             }
         });
 //        mEmptyView = (TextView) view.findViewById(R.id.empty_view);
@@ -125,7 +128,7 @@ public class CrimeListFragment extends Fragment {
                 Crime crime = new Crime();
                 CrimeLab.get(getActivity()).addCrime(crime);
                 updateUI(); // must update because on tablets, the list remains visible when you add a new crime
-                mCallbacks.onCrimeSelected(crime);
+                mCrimeListListener.onCrimeSelected(crime);
                 return true;
             case R.id.menu_item_show_subtitle: //triggers re-creation of action items when user presses Show Subtitle action item
                 mSubtitleVisible = !mSubtitleVisible;
@@ -140,7 +143,7 @@ public class CrimeListFragment extends Fragment {
     public void updateSubtitle(){
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         int crimeCount = crimeLab.getCrimes().size();
-        String subtitle = getResources().getQuantityString(R.plurals.subtitle_plural,crimeCount,crimeCount);
+        String subtitle = getResources().getQuantityString(R.plurals.subtitle_plural, crimeCount, crimeCount);
 
         if (!mSubtitleVisible){
             subtitle = null;
@@ -161,7 +164,7 @@ public class CrimeListFragment extends Fragment {
         }
 
         if(mAdapter == null) {
-            mAdapter = new CrimeAdapter(crimes);
+            mAdapter = new CrimeAdapter(crimes, mCrimeListListener);
             mCrimeRecyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.setCrimes(crimes);
@@ -169,7 +172,12 @@ public class CrimeListFragment extends Fragment {
         }
 
         updateSubtitle();
+
+//        UUID crimeId = (UUID) getArguments().getSerializable(CrimeFragment.ARG_CRIME_ID);
+//        Crime crime = CrimeLab.get(getActivity()).getCrime(crimeId);
+//        mCrimeListListener.onCrimeUpdated(crime);
     }
+
 
     private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -197,16 +205,18 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            mCallbacks.onCrimeSelected(mCrime);
+            mCrimeListListener.onCrimeSelected(mCrime);
         }
     }
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{
 
         private List<Crime> mCrimes;
+        private CrimeListListener mCrimeListListener;
 
-        public CrimeAdapter(List<Crime> crimes){
+        public CrimeAdapter(List<Crime> crimes, CrimeListListener listListener){
             mCrimes = crimes;
+            mCrimeListListener = listListener;
         }
 
         @Override
@@ -218,8 +228,19 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(CrimeHolder holder, int position){
-            Crime crime = mCrimes.get(position); //finding the model data
+           final Crime crime = mCrimes.get(position); //finding the model data
             holder.bindCrime(crime); //binding the data to the view
+
+            //making sure isSolved happens in both CrimeFragment and CrimeListFragment
+
+
+            holder.mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    CrimeLab.get(getActivity()).updateCrime(crime);
+                    mCrimeListListener.onSolvedCheck(isChecked, crime);
+                }
+            });
         }
 
         @Override
@@ -231,4 +252,6 @@ public class CrimeListFragment extends Fragment {
             mCrimes = crimes;
         }
     }
+
+    //TODO: add new method that gives you the position the crime is in
 }

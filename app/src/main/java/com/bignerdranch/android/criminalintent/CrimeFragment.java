@@ -15,6 +15,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,6 +26,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import java.io.File;
 import java.util.Date;
@@ -33,7 +37,7 @@ import java.util.UUID;
  */
 public class CrimeFragment extends Fragment {
 
-    private static final String ARG_CRIME_ID = "crime_id";
+    public static final String ARG_CRIME_ID = "crime_id";
     private static final String DIALOG_DATE = "DialogeDate";
 
     private static final int REQUEST_DATE = 0;
@@ -49,6 +53,11 @@ public class CrimeFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
 
+    private Button mSaveButton;
+
+    //when empty
+    private LinearLayout mEmptyLayout;
+
     private DateFormat mDateFormat;
     private Date mRawDate;
 
@@ -57,6 +66,8 @@ public class CrimeFragment extends Fragment {
     private File mPhotoFile;
 
     private Callbacks mCallbacks;
+
+    private int crimePosition;
 
     public static CrimeFragment newInstance(UUID crimeId){
         Bundle args = new Bundle();
@@ -83,6 +94,8 @@ public class CrimeFragment extends Fragment {
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
         mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+
+        setHasOptionsMenu(true);
     }
 
     //updates CrimeLab's copy of the crime when it gets modified in CrimeFragment
@@ -201,7 +214,51 @@ public class CrimeFragment extends Fragment {
         mPhotoView = (ImageView)v.findViewById(R.id.crime_photo);
         updatePhotoView();
 
+        if (!getResources().getBoolean(R.bool.is_tablet)){
+            mSaveButton = (Button) v.findViewById(R.id.save_button);
+            mSaveButton.setVisibility(View.VISIBLE);
+            mSaveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateCrime();
+                    getActivity().finish();
+                }
+            });
+        }
+
+//        mEmptyLayout = (LinearLayout) v.findViewById(R.id.crime_emptylayout);
+
+        //check to see if there is a crime. If there isn't, show this text in the CrimeFragment
+//        if (CrimeLab.get(null).getCrimes() == null) {
+//            mEmptyLayout.setVisibility(View.VISIBLE);
+//        } else {
+//            mEmptyLayout.setVisibility(View.INVISIBLE);
+//        }
+
+
+
+
         return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_crime, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem){
+        switch(menuItem.getItemId()){
+            case R.id.menu_item_delete_crime:
+                CrimeLab.get(null).removeCrime(mCrime); //you don't need to send an intent back to the CrimeListActivity because the CrimeFragment is doing the removal and referencing the finish.
+                //also, CrimeListActivity references CrimeLab directly.
+               getActivity().getFragmentManager().popBackStack();
+                updateCrime();
+                return true;
+            default:
+                return super.onOptionsItemSelected(menuItem);
+        }
     }
 
     //retrieving date extra from DatePickerFragment, setting the date on Crime, and refreshing the text on the date button
@@ -245,6 +302,21 @@ public class CrimeFragment extends Fragment {
             updateCrime();
             updatePhotoView();
         }
+    }
+
+    //TODO: Try this later
+    public void updateUI(boolean isSolved){
+        //if there's another crimefragment in the list, it should show the next crime
+//        if (CrimeLab.get(getActivity()).getCrimes().size()== 0){
+//            //TODO: add empty state
+//        } else {
+//            //go to previous crime. Need to know where in the list you were
+//            if () //if the current crime position is equal to 0, get the next crime in the list
+//            {
+//
+//            }
+//        }
+        mSolvedCheckbox.setChecked(isSolved);
     }
 
     private void updateCrime(){

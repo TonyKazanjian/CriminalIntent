@@ -4,7 +4,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <include layout="@layout/view_camera_and_title"/>
+    <include layout="@layout/view_camera_and_title_and_save_button"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -42,5 +42,21 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:text="@string/crime_report_text"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/crime_emptylayout"
+        android:orientation="vertical"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/empty_view"
+            android:text="@string/no_crimes"
+            android:layout_gravity="center_horizontal"/>
+
+        </LinearLayout>
 
 </LinearLayout>

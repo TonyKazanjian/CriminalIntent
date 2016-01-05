@@ -44,6 +44,15 @@
             android:id="@+id/crime_title"
             android:layout_marginRight="16dp"
             android:hint="@string/crime_title_hint"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/save_button"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:text="Save crime"
+            android:visibility="gone"/>
     </LinearLayout>
 
 </LinearLayout>
